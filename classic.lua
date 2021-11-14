@@ -45,17 +45,25 @@ function Object:extend()
   return cls
 end
 
-
-function Object:implement(...)
-  for _, cls in pairs({...}) do
-    for k, v in pairs(cls) do
-      if self[k] == nil and type(v) == "function" then
+local function implement(self, cls)
+  for k, v in pairs(cls) do
+    if self[k] == nil then
+      if type(v) ~= 'table' then
         self[k] = v
+      else
+        self[k] = {}
+        implement(self[k], v)
       end
     end
   end
 end
 
+function Object:implement(...)
+  for _, cls in pairs({...}) do
+    implement(self, cls)
+  end
+  return self
+end
 
 function Object:is(T)
   local mt = getmetatable(self)
