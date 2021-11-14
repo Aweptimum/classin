@@ -34,62 +34,65 @@ end
 ---Inheritance method
 ---@return Object cls child class
 function Object:extend()
-  local cls = {}
-  for k, v in pairs(self) do
-    if k:find("__") == 1 then
-      cls[k] = v
-    end
-  end
-  cls.__index = cls
-  cls.super = self
-  setmetatable(cls, self)
-  return cls
+	local cls = {}
+	for k, v in pairs(self) do
+		if k:find("__") == 1 then
+			cls[k] = v
+		end
+	end
+	cls.__index = cls
+	cls.super = self
+	setmetatable(cls, self)
+	return cls
 end
 
 local function implement(self, cls)
-  for k, v in pairs(cls) do
-    if self[k] == nil then
-      if type(v) ~= 'table' then
-        self[k] = v
-      else
-        self[k] = {}
-        implement(self[k], v)
-      end
-    end
-  end
+	for k, v in pairs(cls) do
+		if self[k] == nil then
+			if type(v) ~= 'table' then
+				self[k] = v
+			else
+				self[k] = {}
+				implement(self[k], v)
+			end
+		end
+	end
 end
 
 ---Implement given interfaces (fields + functions)
 ---@vararg Object
 ---@return Object self
 function Object:implement(...)
-  for _, cls in pairs({...}) do
-    implement(self, cls)
-  end
-  return self
+	for _, cls in pairs({...}) do
+		implement(self, cls)
+	end
+	return self
 end
 
+---Checks that an object is an instance of given class
+---@param T Object class to check against
+---@return boolean
 function Object:is(T)
-  local mt = getmetatable(self)
-  while mt do
-    if mt == T then
-      return true
-    end
-    mt = getmetatable(mt)
-  end
-  return false
+	local mt = getmetatable(self)
+	while mt do
+		if mt == T then
+			return true
+		end
+		mt = getmetatable(mt)
+	end
+	return false
 end
-
 
 function Object:__tostring()
-  return "Object"
+	return "Object"
 end
 
-
+---Metamethod constructor
+---@return Object new
 function Object:__call(...)
-  local obj = setmetatable({}, self)
-  obj:new(...)
-  return obj
+	local obj = setmetatable({}, self)
+	obj:new(...)
+	return obj
 end
 
 
