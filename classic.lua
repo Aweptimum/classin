@@ -23,15 +23,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]--
 
-
+---@class Object
 local Object = {}
 Object.__index = Object
 
-
+---Abstract constructor
 function Object:new()
 end
 
-
+---Inheritance method
+---@return Object cls child class
 function Object:extend()
   local cls = {}
   for k, v in pairs(self) do
@@ -58,6 +59,9 @@ local function implement(self, cls)
   end
 end
 
+---Implement given interfaces (fields + functions)
+---@vararg Object
+---@return Object self
 function Object:implement(...)
   for _, cls in pairs({...}) do
     implement(self, cls)
