@@ -24,6 +24,7 @@ SOFTWARE.
 ]]--
 
 ---@class Object
+---@field __name string
 local Object = {}
 Object.__index = Object
 
@@ -33,13 +34,14 @@ end
 
 ---Inheritance method
 ---@return Object cls child class
-function Object:extend()
+function Object:extend(name)
 	local cls = {}
 	for k, v in pairs(self) do
 		if k:find("__") == 1 then
 			cls[k] = v
 		end
 	end
+	cls.__name = name or 'Object'
 	cls.__index = cls
 	cls.super = self
 	setmetatable(cls, self)
@@ -84,7 +86,7 @@ function Object:is(T)
 end
 
 function Object:__tostring()
-	return "Object"
+	return self.__name
 end
 
 ---Metamethod constructor
