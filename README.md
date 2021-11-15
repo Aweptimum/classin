@@ -1,13 +1,17 @@
-# Classic
+# Classin
 
-A tiny class module for Lua. Attempts to stay simple and provide decent
+A fork of rxi's tiny class module for Lua. Attempts to stay simple and provide decent
 performance by avoiding unnecessary over-abstraction.
 
+## Added features:
+* `:implement()` no longer restricted to just functions, copies static fields as well
+* [EmmyLua annotations](https://emmylua.github.io/annotation.html)
+* Added optional class name arg to `:extend`
 
 ## Usage
 
 The [module](classic.lua) should be dropped in to an existing project and
-required by it:
+required by:
 
 ```lua
 Object = require "classic"
@@ -19,7 +23,7 @@ additional classes.
 
 ### Creating a new class
 ```lua
-Point = Object:extend()
+Point = Object:extend('Point') -- optional name
 
 function Point:new(x, y)
   self.x = x or 0
@@ -51,30 +55,6 @@ print(p:is(Point)) -- true
 print(p:is(Rect)) -- false 
 ```
 
-### Using mixins
-```lua
-PairPrinter = Object:extend()
-
-function PairPrinter:printPairs()
-  for k, v in pairs(self) do
-    print(k, v)
-  end
-end
-
-
-Point = Object:extend()
-Point:implement(PairPrinter)
-
-function Point:new(x, y)
-  self.x = x or 0
-  self.y = y or 0
-end
-
-
-local p = Point()
-p:printPairs()
-```
-
 ### Using static variables
 ```lua
 Point = Object:extend()
@@ -95,6 +75,34 @@ end
 function Point:__tostring()
   return self.x .. ", " .. self.y
 end
+```
+
+### Using mixins
+```lua
+PairPrinter = Object:extend()
+PairPrinter.limit = 1
+
+function PairPrinter:printPairs()
+  local i = 0
+  for k, v in pairs(self) do
+    i = i + 1
+    print(k, v)
+    if i >= self.limit then return end
+  end
+end
+
+
+Point = Object:extend()
+Point:implement(PairPrinter)
+
+function Point:new(x, y)
+  self.x = x or 0
+  self.y = y or 0
+end
+
+
+local p = Point()
+p:printPairs() -- only prints one pair
 ```
 
 
